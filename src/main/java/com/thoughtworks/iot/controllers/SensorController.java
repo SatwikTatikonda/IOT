@@ -2,6 +2,7 @@ package com.thoughtworks.iot.controllers;
 
 import com.thoughtworks.iot.models.Sensors;
 import com.thoughtworks.iot.service.SensorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,8 @@ public class SensorController {
         return sensorService.deleteSensor(id);
     }
 
-    @PostMapping("/sensor")
-    public Sensors addSensor(@RequestBody Sensors sensors){
+    @PostMapping("/sensors")
+    public Sensors addSensor(@Valid @RequestBody Sensors sensors){
         return sensorService.create(sensors);
     }
 

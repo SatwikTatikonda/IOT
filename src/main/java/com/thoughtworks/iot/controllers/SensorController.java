@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/public")
 public class SensorController {
 
     @Autowired
@@ -25,7 +26,7 @@ public class SensorController {
         return sensorService.deleteSensor(id);
     }
 
-    @PostMapping("/sensors")
+    @PostMapping
     public Sensors addSensor(@Valid @RequestBody Sensors sensors){
         return sensorService.create(sensors);
     }

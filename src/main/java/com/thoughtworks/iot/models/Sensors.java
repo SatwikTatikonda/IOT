@@ -20,4 +20,5 @@ public class Sensors {
     @NotNull(message = "manufacturer cannot be null")
     private String manufacturer;
 
+
 }

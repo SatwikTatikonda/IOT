@@ -15,21 +15,20 @@ public class SensorController {
     @Autowired
     private SensorService sensorService;
 
-    @GetMapping("/api/public")
+    @GetMapping("/api/get")
     public List<Sensors> getAllSensors(){
 
         return sensorService.getSensors();
     }
 
-    @DeleteMapping("/api/admin/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/api/delete/{id}")
     public String deleteSensor(@PathVariable Long id){
 
         System.out.println("calling delete");
         return sensorService.deleteSensor(id);
     }
 
-    @PostMapping("/api/public")
+    @PostMapping("/api/create")
     public Sensors addSensor(@Valid @RequestBody Sensors sensors){
         return sensorService.create(sensors);
     }

@@ -1,12 +1,16 @@
 package com.thoughtworks.iot.service;
+import com.thoughtworks.iot.config.JwtUtil;
+import com.thoughtworks.iot.dtos.AuthRequest;
 import com.thoughtworks.iot.models.User;
 import com.thoughtworks.iot.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -15,56 +19,54 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service("userService")
-public class UserService implements UserDetailsService {
+@Service
+public class UserService {
 
     private UserRepository userRepository;
+    private UserDetailsService userDetailsService;
+    private PasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,UserDetailsService userDetailsService,JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userDetailsService=userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
-//
-//
-//    public UserDetails loadUserByUsername(User useR) throws UsernameNotFoundException {
-//
-//
-//        // Convert the User entity to a Spring Security UserDetails object
-//
-//    }
-//    static Long id=101L;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Fetch the user from the database
-        System.out.println("Fetching user for username: " + username);
 
+
+
+    public User reigsterUser(String Username, String Password) {
+        User u=new User();
+        u.setUsername(Username);
+        u.setPassword(passwordEncoder.encode(Password));
+        u.setRoles(List.of("ROLE_ADMIN"));
+        return userRepository.save(u);
+    }
+
+    public String loginUser(String username, String password) {
+        System.out.println(userRepository.findAll());
+        System.out.println("username;" + username);
         Optional<User> userOptional = userRepository.findByUsername(username);
-        User user;
-
+        System.out.println(userOptional);
+        System.out.println(userOptional.isPresent());
         if(!userOptional.isPresent()) {
-//            System.out.println("User not found");
-//            throw new UsernameNotFoundException(username);
-            user=new User();
-//            user.setId(id++);
-            user.setUsername(username);
-            user.setPassword(new BCryptPasswordEncoder(12).encode("admin123"));
-            user.setRoles(List.of("ROLE_USER"));
-            user=userRepository.save(user);
+            throw new UsernameNotFoundException("Username or password is incorrect");
         }
         else{
-            user=userOptional.get();
+
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            System.out.println("UserDetails: " + userDetails);
+            String token = jwtUtil.generateToken(
+                    userDetails.getUsername(),
+                    userDetails.getAuthorities().stream()
+                            .map(grantedAuthority -> grantedAuthority.getAuthority()) // Extract authority names as strings
+                            .collect(Collectors.toList()) // Convert to a list of strings
+            );
+            return token;
 
         }
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(SimpleGrantedAuthority::new) // Convert each role to a GrantedAuthority
-                .collect(Collectors.toList());
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                authorities
-
-        );
-
     }
 }

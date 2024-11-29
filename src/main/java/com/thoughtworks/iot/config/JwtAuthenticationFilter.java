@@ -1,5 +1,6 @@
 package com.thoughtworks.iot.config;
 
+import com.thoughtworks.iot.service.CustomUserServiceDetails;
 import com.thoughtworks.iot.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -39,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("in filter "+requestPath);
 
-        if (requestPath.equals("/register") || requestPath.startsWith("/api/public/")) {
+        if (requestPath.startsWith("/auth")) {
             filterChain.doFilter(request, response); // Skip processing
             return;
         }
@@ -47,26 +48,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("DoFilterInternal "+authHeader);
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            System.out.println("extracting details");
             token = authHeader.substring(7);
             username = jwtUtil.extractUserName(token);
             roles=jwtUtil.extractRoles(token);
             System.out.println("roles extracted "+roles);
         }
-        System.out.println("out of if ");
+
         if(!roles.isEmpty() && username!=null && roles!=null && SecurityContextHolder.getContext().getAuthentication() == null){
 
-            UserDetails userDetails = context.getBean(UserService.class).loadUserByUsername(username);
+            UserDetails userDetails = context.getBean(CustomUserServiceDetails.class).loadUserByUsername(username);
             if (jwtUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                System.out.println(authToken.toString());
+                System.out.println("authtoken "+authToken.toString());
                 authToken.setDetails(new WebAuthenticationDetailsSource()
                         .buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-
+        filterChain.doFilter(request, response);
 
     }
 }

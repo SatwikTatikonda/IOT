@@ -4,11 +4,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
@@ -52,16 +52,56 @@ public class JwtUtil {
 
     }
 
-    public Key getKey() {
+    public SecretKey getKey() {
         byte[] keyBytes= Decoders.BASE64.decode(secretkey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Validate Token
-//    public boolean validateToken(String token, String username) {
-//        final String extractedUsername = extractUsername(token);
-//        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    public String extractUserName(String token) {
+        return  extractClaim(token,Claims::getSubject);
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        System.out.println(
+                "Claims "+claims
+        );
+        return claims.get("roles", List.class);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+
+
+
+//    public List<String> extractRoles(String token) {
+//
+//        return null;
 //    }
+
+//    public boolean validateToken(String token, UserDetails userDetails) {
+//        return true;
+//    }
+
+//     Validate Token
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String extractedUsername = extractUserName(token);
+        final List<String> extractedRoles = extractRoles(token);
+        System.out.println("extractedRoles "+extractedRoles);
+        System.out.println(userDetails.getAuthorities());
+        return (extractedUsername.equals(userDetails.getUsername())&&!isTokenExpired(token));
+    }
 //
 //    // Extract Username
 //    public String extractUsername(String token) {
@@ -69,20 +109,17 @@ public class JwtUtil {
 //    }
 
     // Extract Roles
-//    public List<String> extractRoles(String token) {
-//        Claims claims = extractAllClaims(token);
-//        return claims.get("roles", List.class);
-//    }
+
 //
 //    // Check Token Expiry
-//    private boolean isTokenExpired(String token) {
-//        return extractExpiration(token).before(new Date());
-//    }
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
 
     // Extract Expiration Date
-//    public Date extractExpiration(String token) {
-//        return extractClaim(token, Claims::getExpiration);
-//    }
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 //
 //    // Extract Claims
 //    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

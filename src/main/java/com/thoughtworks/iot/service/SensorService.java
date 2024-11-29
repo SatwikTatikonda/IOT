@@ -20,6 +20,7 @@ public class SensorService {
     public String  deleteSensor(Long id) {
 
          sensorRepository.deleteById(id);
+        System.out.println("sensor deleted");
          return "Sensor deleted";
     }
 

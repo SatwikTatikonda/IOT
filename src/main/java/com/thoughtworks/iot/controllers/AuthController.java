@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/authenticate")
+@RequestMapping("/register")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -40,7 +40,7 @@ public class AuthController {
         }
         catch(AuthenticationException e){
             System.out.println(
-                    e.getMessage()
+                    "message from authenticationException"+e.getMessage()
             );
         }
 

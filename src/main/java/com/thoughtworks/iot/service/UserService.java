@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -30,7 +31,7 @@ public class UserService implements UserDetailsService {
 //        // Convert the User entity to a Spring Security UserDetails object
 //
 //    }
-    static Long id=101L;
+//    static Long id=101L;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,9 +45,9 @@ public class UserService implements UserDetailsService {
 //            System.out.println("User not found");
 //            throw new UsernameNotFoundException(username);
             user=new User();
-            user.setId(id++);
+//            user.setId(id++);
             user.setUsername(username);
-            user.setPassword("password");
+            user.setPassword(new BCryptPasswordEncoder(12).encode("admin123"));
             user.setRoles(List.of("ROLE_USER"));
             user=userRepository.save(user);
         }

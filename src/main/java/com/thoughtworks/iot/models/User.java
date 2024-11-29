@@ -13,7 +13,7 @@ public class User {
 
     @Id
     @NotNull(message = "id cant be null")
-    private long id;
+    private String id;
     @NotNull(message="name cant be null")
     private String username;
     @NotNull(message="role cant be empty")

@@ -37,7 +37,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthEntryPoint jwtAuthEntryPoint) throws Exception {
 
         System.out.println("in securityFilterChain");
-//        System.out.println("printing "+http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(r->r.requestMatchers("/auth/register")));
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
@@ -73,3 +72,4 @@ public class SecurityConfig {
     }
 
 }
+

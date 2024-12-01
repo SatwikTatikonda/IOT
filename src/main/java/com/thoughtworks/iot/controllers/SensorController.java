@@ -1,5 +1,6 @@
 package com.thoughtworks.iot.controllers;
 
+import com.thoughtworks.iot.Exception.SensorNotFoundException;
 import com.thoughtworks.iot.models.Sensors;
 import com.thoughtworks.iot.service.SensorService;
 import jakarta.validation.Valid;
@@ -22,9 +23,8 @@ public class SensorController {
     }
 
     @DeleteMapping("/api/delete/{id}")
-    public String deleteSensor(@PathVariable Long id){
+    public String deleteSensor(@PathVariable Long id) throws SensorNotFoundException {
 
-        System.out.println("calling delete");
         return sensorService.deleteSensor(id);
     }
 

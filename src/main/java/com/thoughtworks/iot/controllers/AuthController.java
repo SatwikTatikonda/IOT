@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class AuthController {
 
 
-    private final UserService userService;
+    private  UserService userService;
 
     public AuthController(UserService userService) {
 //

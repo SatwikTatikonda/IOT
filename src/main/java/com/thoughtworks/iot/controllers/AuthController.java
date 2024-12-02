@@ -1,5 +1,6 @@
 package com.thoughtworks.iot.controllers;
 
+import com.thoughtworks.iot.Exception.UserAlreadyRegistered;
 import com.thoughtworks.iot.config.JwtUtil;
 import com.thoughtworks.iot.dtos.AuthRequest;
 import com.thoughtworks.iot.models.User;
@@ -27,9 +28,13 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<User> register(@RequestBody AuthRequest authRequest) {
-
-        return ResponseEntity.ok(userService.reigsterUser(authRequest.getUsername(), authRequest.getPassword()));
+    public ResponseEntity<User> register(@RequestBody AuthRequest authRequest)  {
+                try {
+                    return ResponseEntity.ok(userService.registerUser(authRequest.getUsername(), authRequest.getPassword()));
+                }
+                catch (UserAlreadyRegistered e) {
+                    return ResponseEntity.status(409).body(null); // Return a 409 Conflict
+                }
     }
 
     @PostMapping("/auth/login")

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,11 +68,59 @@ class SensorServiceTest {
         Sensors mockSensor=new Sensors(-1L,null,null,null,null);
 
         Exception exception=assertThrows(IllegalArgumentException.class,()->sensorService.create(mockSensor));
-        assertEquals("Invalid sensor arguments",exception.getMessage());
+        assertEquals("Sensor Properties are improper",exception.getMessage());
 
         verify(sensorRepository,never()).save(mockSensor);
 
     }
+
+
+    @Test
+    void testGetSensorsReturnsEmptyList() {
+        when(sensorRepository.findAll()).thenReturn(Arrays.asList());
+
+        List<Sensors> sensors = sensorService.getSensors();
+
+        assertTrue(sensors.isEmpty());
+        verify(sensorRepository, times(1)).findAll();
+    }
+    @Test
+    void testDeleteSensorThrowsException() {
+        Long sensorId = 1L;
+
+        when(sensorRepository.findById(sensorId)).thenReturn(Optional.empty());
+
+        assertThrows(SensorNotFoundException.class, () -> sensorService.deleteSensor(sensorId));
+        verify(sensorRepository, times(1)).findById(sensorId);
+        verify(sensorRepository, never()).deleteById(sensorId);
+    }
+
+    @Test
+    void testCreateSensorThrowsExceptionForNullProperties() {
+        Sensors invalidSensor = new Sensors(-1L, null, null, "Manufacturer1", "Model1");
+
+        assertThrows(IllegalArgumentException.class, () -> sensorService.create(invalidSensor));
+        verify(sensorRepository, never()).save(invalidSensor);
+    }
+
+    @Test
+    void testCreateSensorValidProperties() {
+        Sensors sensor = new Sensors(10L, "Sensor1", SensorType.PROXIMITY, "Manufacturer1", "Model1");
+
+        when(sensorRepository.save(sensor)).thenReturn(sensor);
+
+        Sensors savedSensor = sensorService.create(sensor);
+
+        assertNotNull(savedSensor);
+        assertEquals("Sensor1", savedSensor.getName());
+        verify(sensorRepository, times(1)).save(sensor);
+    }
+
+
+
+
+
+
 
 
 

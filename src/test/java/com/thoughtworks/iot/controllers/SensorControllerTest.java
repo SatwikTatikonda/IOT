@@ -85,7 +85,7 @@ class SensorControllerTest {
     }
 
     @Test
-    void deleteSensorFromDataBaseWhichIsNotPresent() throws Exception {
+    void deleteSensorFromDataBaseWhichIsNotPresent() throws SensorNotFoundException {
         Long id = -1L;
         when(sensorService.deleteSensor(id)).thenThrow(new SensorNotFoundException("Sensor not found!"));
 

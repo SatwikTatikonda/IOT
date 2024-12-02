@@ -1,4 +1,6 @@
 package com.thoughtworks.iot.service;
+import com.thoughtworks.iot.Exception.UserAlreadyRegistered;
+import com.thoughtworks.iot.Exception.UserNotFoundException;
 import com.thoughtworks.iot.config.JwtUtil;
 import com.thoughtworks.iot.dtos.AuthRequest;
 import com.thoughtworks.iot.models.User;
@@ -37,7 +39,11 @@ public class UserService {
 
 
 
-    public User reigsterUser(String Username, String Password) {
+    public User registerUser(String Username, String Password) throws UserAlreadyRegistered {
+        Optional<User> user = userRepository.findByUsername(Username);
+        if(user.isPresent()) {
+            throw new UserAlreadyRegistered("User already registerd");
+        }
         User u=new User();
         u.setUsername(Username);
         u.setPassword(passwordEncoder.encode(Password));
@@ -49,6 +55,10 @@ public class UserService {
         System.out.println(userRepository.findAll());
         System.out.println("username;" + username);
         Optional<User> userOptional = userRepository.findByUsername(username);
+        if(!userOptional.isPresent()) {
+//            throw new UserNotFoundException("user not regisrted,try rgister first");
+            throw new UsernameNotFoundException("Username not found");
+        }
         System.out.println(userOptional);
         System.out.println(userOptional.isPresent());
         if(!userOptional.isPresent()) {

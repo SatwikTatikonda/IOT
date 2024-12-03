@@ -24,4 +24,6 @@ public class User {
     private List<String> roles;
     @NotNull(message="password cant be empty")
     private String password;
+
+
 }

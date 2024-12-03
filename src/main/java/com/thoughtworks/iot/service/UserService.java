@@ -1,17 +1,11 @@
 package com.thoughtworks.iot.service;
 import com.thoughtworks.iot.Exception.UserAlreadyRegistered;
-import com.thoughtworks.iot.Exception.UserNotFoundException;
 import com.thoughtworks.iot.config.JwtUtil;
-import com.thoughtworks.iot.dtos.AuthRequest;
 import com.thoughtworks.iot.models.User;
 import com.thoughtworks.iot.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +50,6 @@ public class UserService {
         System.out.println("username;" + username);
         Optional<User> userOptional = userRepository.findByUsername(username);
         if(!userOptional.isPresent()) {
-//            throw new UserNotFoundException("user not regisrted,try rgister first");
             throw new UsernameNotFoundException("Username not found");
         }
         System.out.println(userOptional);

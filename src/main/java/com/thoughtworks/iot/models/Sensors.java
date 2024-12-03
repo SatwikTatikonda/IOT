@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document(collection = "sensorMap")
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class Sensors {
 

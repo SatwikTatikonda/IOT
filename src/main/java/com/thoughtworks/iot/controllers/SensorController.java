@@ -30,6 +30,8 @@ public class SensorController {
 
     @PostMapping("/api/create")
     public Sensors addSensor(@Valid @RequestBody Sensors sensors){
+
+        System.out.println("sensor created "+sensors);
         return sensorService.create(sensors);
     }
 

@@ -32,13 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("in doFilterInternal");
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
         List<String>roles=null;
-        String requestPath = request.getServletPath();
-
-        System.out.println("in filter "+requestPath);
+        String requestPath = request.getRequestURI();
+        System.out.println("request "+request);
+        System.out.println("in filter "+requestPath+"  rp");
 
         if (requestPath.startsWith("/auth")) {
             filterChain.doFilter(request, response); // Skip processing
@@ -54,8 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("roles extracted "+roles);
         }
 
-        if(!roles.isEmpty() && username!=null && roles!=null && SecurityContextHolder.getContext().getAuthentication() == null){
+        if(username!=null &&  roles!=null &&  SecurityContextHolder.getContext().getAuthentication() == null){
 
+            System.out.println("inside if");
             UserDetails userDetails = context.getBean(CustomUserServiceDetails.class).loadUserByUsername(username);
             if (jwtUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -66,6 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        System.out.println("jwtFilteration done");
         filterChain.doFilter(request, response);
 
     }

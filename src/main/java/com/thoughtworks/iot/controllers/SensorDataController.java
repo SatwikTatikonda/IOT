@@ -1,6 +1,7 @@
 package com.thoughtworks.iot.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.iot.models.SensorData;
 import com.thoughtworks.iot.service.SensorDataService;
 import jakarta.validation.Valid;
@@ -17,16 +18,19 @@ public class SensorDataController {
     @Autowired
     private SensorDataService sensorDataService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @PostMapping("/kafka")
-    public void sendSensorData(@Valid @RequestBody SensorData sensorData){
+    public String sendSensorData(@Valid @RequestBody SensorData sensorData){
 
-        System.out.println("data to be sent to kafka "+sensorData);
         try{
-            sensorDataService.sendSensorData(sensorData.getId(),sensorData.getTemperature(), LocalDateTime.now());
-        } catch (JsonProcessingException e) {
-            System.out.println("Error while sending sensor data to kafka");
-        }
+            System.out.println("data to be sent to kafka");
+            return objectMapper.writeValueAsString(sensorDataService.sendSensorData(sensorData));
 
+        } catch (JsonProcessingException e) {
+            return ("Error while sending sensor data to kafka");
+        }
 
     }
 }

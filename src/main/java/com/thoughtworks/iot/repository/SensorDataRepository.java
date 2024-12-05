@@ -1,21 +1,16 @@
 package com.thoughtworks.iot.repository;
 
-import com.thoughtworks.iot.dtos.Temperature_TimeStamp_Binder;
+import com.thoughtworks.iot.models.SensorData;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Repository
-public class SensorDataRepository {
-    public Map<Long, List<Temperature_TimeStamp_Binder>> saveSensorData(Long id, Map<Long, List<Temperature_TimeStamp_Binder>> temperatureMap, Temperature_TimeStamp_Binder binder) {
+public interface SensorDataRepository extends MongoRepository<SensorData,String> {
 
-        temperatureMap.putIfAbsent(id, new ArrayList<>());
-        temperatureMap.get(id).add(binder);
-        System.out.println(temperatureMap);
-        return temperatureMap;
+     SensorData save(SensorData sensorData);
 
-    }
+    List<SensorData> findByTimestampAfter(LocalDateTime fiveMinutesAgo);
 }

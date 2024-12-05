@@ -3,18 +3,14 @@ package com.thoughtworks.iot.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.iot.dtos.Temperature_TimeStamp_Binder;
-import com.thoughtworks.iot.models.Sensors;
-import org.checkerframework.checker.units.qual.A;
+import com.thoughtworks.iot.models.SensorData;
+import com.thoughtworks.iot.repository.SensorDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-
-import java.util.ArrayList;
 
 @Service
 public class KafkaSensorConsumer {
@@ -22,13 +18,43 @@ public class KafkaSensorConsumer {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final Map<Long, List<Double>> sensorDataMap = new HashMap<>();
+    @Autowired
+    private SensorDataRepository sensorDataRepository;
 
     @KafkaListener(topics = "sensorData",groupId = "sensor-data-consumer-group")
     public void listenToSensorData(String message) throws JsonProcessingException {
 
         System.out.println("here is the message "+ message);
-        System.out.println("here is the object "+objectMapper.readValue(message, Temperature_TimeStamp_Binder.class));
+        SensorData sensorData=objectMapper.readValue(message, SensorData.class);
+        Long targetId=sensorData.getSensorId();
+        // Fetch all sensor data from the last 5 minutes
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+        List<SensorData> lastFiveMinutesData = sensorDataRepository
+                .findByTimestampAfter(fiveMinutesAgo);
+
+        System.out.println(targetId);
+        System.out.println(lastFiveMinutesData);
+        List<SensorData>targetData=new ArrayList<>();
+        for(SensorData sensorDataOverLastFiveMinutes : lastFiveMinutesData) {
+
+            if(sensorDataOverLastFiveMinutes.getSensorId()==targetId){
+
+                targetData.add(sensorDataOverLastFiveMinutes);
+            }
+        }
+
+        System.out.println(targetData);
+
+        // Calculate and log the average temperature
+        if (!targetData.isEmpty()) {
+            double avgTemperature = targetData.stream()
+                    .mapToDouble(SensorData::getTemperature)
+                    .average()
+                    .orElse(0.0);
+            System.out.printf("Average Temperature (Last 5 Minutes): %.2f%n", avgTemperature);
+        } else {
+            System.out.println("No data available for the last 5 minutes.");
+        }
 
     }
 

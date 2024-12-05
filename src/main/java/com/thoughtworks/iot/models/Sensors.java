@@ -1,11 +1,15 @@
 package com.thoughtworks.iot.models;
 
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 @Data
 @Document(collection = "sensorMap")
@@ -23,7 +27,20 @@ public class Sensors {
     private String modelNumber;
     @NotNull(message = "manufacturer cannot be null")
     private String manufacturer;
+    @NotNull(message = "Temperature is required")
+    private Double temperature;
 
+    @NotNull(message = "Latitude is required")
+    private Double latitude;
+
+    @NotNull(message = "Longitude is required")
+    private Double longitude;
+
+    @CreatedDate
+    private Date createdAt;
+
+    @LastModifiedDate
+    private Date updatedAt;
 
 
 }

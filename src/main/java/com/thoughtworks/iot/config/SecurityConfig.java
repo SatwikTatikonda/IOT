@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/kafka").permitAll()
                         .requestMatchers("/api/create").hasRole("ADMIN")
                         .requestMatchers("/api/get").permitAll()
                         .requestMatchers("/api/delete/**").hasRole("ADMIN")

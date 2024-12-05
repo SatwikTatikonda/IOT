@@ -15,4 +15,5 @@ public interface SensorRepository extends MongoRepository<Sensors, Long> {
 
     public Sensors save(Sensors sensors);
 
+
 }

@@ -41,7 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("request "+request);
         System.out.println("in filter "+requestPath+"  rp");
 
-        if (requestPath.startsWith("/auth")) {
+//        if(requestPath.startsWith("/kafka")){
+//            return;
+//        }
+
+        if (requestPath.startsWith("/auth")
+                || requestPath.startsWith("/kafka")
+        ) {
             filterChain.doFilter(request, response); // Skip processing
             return;
         }

@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +30,32 @@ class SensorServiceTest {
     void getSensors() {
 
 
-        List<Sensors> mockList=List.of(new Sensors(1L,"Air", SensorType.TEMPERATURE,"DD1234","MAHINDRA"),
-                                        new Sensors(2L,"Water",SensorType.LIDAR,"ED1290","FORD"));
-
+        List<Sensors> mockList=Arrays.asList(
+                new Sensors(
+                        1L,
+                        "Temperature Sensor",
+                        SensorType.TEMPERATURE,
+                        "T12345",
+                        "Acme Inc.",
+                        25.5,
+                        40.7128,
+                        -74.0060,
+                        new Date(),
+                        new Date()
+                ),
+                new Sensors(
+                        2L,
+                        "Air Sensor",
+                        SensorType.LIDAR,
+                        "T12345",
+                        "Acme Inc.",
+                        25.5,
+                        40.7128,
+                        -74.0060,
+                        new Date(),
+                        new Date()
+                )
+        );
         when(sensorRepository.findAll()).thenReturn(mockList);
 
         List<Sensors>sensorsList=sensorService.getSensors();
@@ -45,7 +69,18 @@ class SensorServiceTest {
 
 
         Long id=12L;
-        when(sensorRepository.findById(id)).thenReturn(Optional.of(new Sensors(id, "AirSensor", SensorType.PROXIMITY, "WD1213", "TATA")));
+        when(sensorRepository.findById(id)).thenReturn(Optional.of(new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        )));
 
         doNothing().when(sensorRepository).deleteById(id);
                 String message="Sensor deleted";
@@ -55,7 +90,18 @@ class SensorServiceTest {
     @Test
     void testCreateSensor() {
 
-        Sensors mockSensor=new Sensors(12L, "AirSensor", SensorType.PROXIMITY, "WD1213", "TATA");
+        Sensors mockSensor=new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );
         when(sensorRepository.save(mockSensor)).thenReturn(mockSensor);
 
         Sensors sensor=sensorService.create(mockSensor);
@@ -65,7 +111,18 @@ class SensorServiceTest {
 
     @Test
     void testCreateSensorWithInvalidSensorArguments(){
-        Sensors mockSensor=new Sensors(-1L,null,null,null,null);
+        Sensors mockSensor=new Sensors(
+                1L,
+                null,
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                null,
+                null,
+                -74.0060,
+                new Date(),
+                new Date()
+        );;
 
         Exception exception=assertThrows(IllegalArgumentException.class,()->sensorService.create(mockSensor));
         assertEquals("Sensor Properties are improper",exception.getMessage());
@@ -97,7 +154,17 @@ class SensorServiceTest {
 
     @Test
     void testCreateSensorThrowsExceptionForNullProperties() {
-        Sensors invalidSensor = new Sensors(-1L, null, null, "Manufacturer1", "Model1");
+        Sensors invalidSensor = new Sensors(
+                1L,
+null,                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                null,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );;
 
         assertThrows(IllegalArgumentException.class, () -> sensorService.create(invalidSensor));
         verify(sensorRepository, never()).save(invalidSensor);
@@ -105,14 +172,25 @@ class SensorServiceTest {
 
     @Test
     void testCreateSensorValidProperties() {
-        Sensors sensor = new Sensors(10L, "Sensor1", SensorType.PROXIMITY, "Manufacturer1", "Model1");
+        Sensors sensor = new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );
 
         when(sensorRepository.save(sensor)).thenReturn(sensor);
 
         Sensors savedSensor = sensorService.create(sensor);
 
         assertNotNull(savedSensor);
-        assertEquals("Sensor1", savedSensor.getName());
+        assertEquals("Temperature Sensor", savedSensor.getName());
         verify(sensorRepository, times(1)).save(sensor);
     }
 

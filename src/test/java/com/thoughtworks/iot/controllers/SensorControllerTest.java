@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,8 +51,30 @@ class SensorControllerTest {
     void getListofSensorsInDataBase() throws Exception {
 
         List<Sensors> mockList = Arrays.asList(
-                new Sensors(1L, "AirSensor", SensorType.PROXIMITY, "WD1213", "TATA"),
-                new Sensors(21L, "TouchSensor", SensorType.LIDAR, "TT1343", "TESLA")
+                new Sensors(
+                        1L,
+                        "Temperature Sensor",
+                        SensorType.TEMPERATURE,
+                        "T12345",
+                        "Acme Inc.",
+                        25.5,
+                        40.7128,
+                        -74.0060,
+                        new Date(),
+                        new Date()
+                ),
+        new Sensors(
+                2L,
+                "Air Sensor",
+                SensorType.LIDAR,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        )
         );
 
         when(sensorService.getSensors()).thenReturn(mockList);
@@ -77,7 +100,18 @@ class SensorControllerTest {
     @Test
     void addSensorToDataBase() throws Exception {
 
-        Sensors sensor=new Sensors(201L,"AirSensor", SensorType.PROXIMITY, "WD1213", "TATA");
+        Sensors sensor=new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );
         when(sensorService.create(sensor)).thenReturn(sensor);
         Sensors actualSensor = sensorController.addSensor(sensor);
         assertEquals(actualSensor, sensor);
@@ -100,7 +134,18 @@ class SensorControllerTest {
     @Test
     void addSensorWithMissigValues() throws Exception {
 
-        Sensors invalidSensor=new Sensors(9L,null,SensorType.LIDAR,"FF1234","STARLINK");
+        Sensors invalidSensor=new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );
         when(sensorService.create(invalidSensor))
                 .thenThrow(new IllegalArgumentException("Sensor Properties are improper"));
 
@@ -115,7 +160,18 @@ class SensorControllerTest {
     @Test
     void addDuplicateSensor() {
         // Arrange
-        Sensors sensor = new Sensors(1L, "AirSensor", SensorType.PROXIMITY, "WD1213", "TATA");
+        Sensors sensor = new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );
         when(sensorService.create(sensor)).thenThrow(new IllegalStateException("Sensor already exists!"));
 
         // Act & Assert

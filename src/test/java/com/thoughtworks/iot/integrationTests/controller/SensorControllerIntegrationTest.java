@@ -76,7 +76,18 @@ class SensorControllerIntegrationTest {
 
         userRepository.deleteAll();
         sensorRepository.deleteAll();
-        sampleSensor = new Sensors(1L,"AirSensor", SensorType.LIDAR,"WS3058","META SENSORS");
+        sampleSensor = new Sensors(
+                1L,
+                "Temperature Sensor",
+                SensorType.TEMPERATURE,
+                "T12345",
+                "Acme Inc.",
+                25.5,
+                40.7128,
+                -74.0060,
+                new Date(),
+                new Date()
+        );
         User user=new User("kjfsoe","username",List.of("ROLE_ADMIN"),"password");
         userRepository.save(user);
         token=jwtUtil.generateToken(user.getUsername(),user.getRoles());
@@ -92,9 +103,9 @@ class SensorControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(sampleSensor))
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("AirSensor"))
-                .andExpect(jsonPath("$.modelNumber").value("WS3058"))
-                .andExpect(jsonPath("$.manufacturer").value("META SENSORS"));
+                .andExpect(jsonPath("$.name").value("Temperature Sensor"))
+                .andExpect(jsonPath("$.modelNumber").value("T12345"))
+                .andExpect(jsonPath("$.manufacturer").value("Acme Inc."));
     }
 
     @Test

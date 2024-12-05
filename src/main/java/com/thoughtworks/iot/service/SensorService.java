@@ -1,19 +1,22 @@
 package com.thoughtworks.iot.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.iot.Exception.SensorNotFoundException;
 import com.thoughtworks.iot.models.Sensors;
+import com.thoughtworks.iot.producers.KafkaSensorProducer;
 import com.thoughtworks.iot.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service("sensorService")
 public class SensorService {
 
     @Autowired
     private SensorRepository sensorRepository;
+
+
 
     public List<Sensors> getSensors(){
         return sensorRepository.findAll();
@@ -31,13 +34,17 @@ public class SensorService {
         }
     }
 
-    public Sensors create(Sensors sensors) {
 
-        if(sensors.getSensorType()==null || sensors.getName()==null || sensors.getManufacturer()==null || sensors.getModelNumber()==null){
+    public Sensors create(Sensors sensor){
+
+        if(sensor.getTemperature() < -50 || sensor.getTemperature() > 150){
+
             throw new IllegalArgumentException("Sensor Properties are improper");
         }
-        return sensorRepository.save(sensors);
+
+        return sensorRepository.save(sensor);
     }
+
 
 
 }

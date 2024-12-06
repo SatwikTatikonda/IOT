@@ -7,6 +7,7 @@ import com.thoughtworks.iot.models.SensorData;
 import com.thoughtworks.iot.repository.SensorDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,8 @@ public class KafkaSensorConsumer {
 
     @Autowired
     private SensorDataRepository sensorDataRepository;
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
 
     @KafkaListener(topics = "sensorData",groupId = "sensor-data-consumer-group")
     public void listenToSensorData(String message) throws JsonProcessingException {
@@ -52,33 +55,18 @@ public class KafkaSensorConsumer {
                     .average()
                     .orElse(0.0);
             System.out.printf("Average Temperature (Last 5 Minutes): %.2f%n", avgTemperature);
-        } else {
-            System.out.println("No data available for the last 5 minutes.");
-        }
+            if(avgTemperature>40){
+                sendAlerts("High Temperature Alert for Sensor "+String.valueOf(sensorData.getSensorId()));
+            }
 
+        } else {
+            System.out.println("No sufficient Data available for the last 5 minutes.");
+        }
     }
 
-//    private void processSensorData(Sensors sensor) {
-//
-//        // Track temperature values for each sensor
-//        sensorDataMap.putIfAbsent(sensor.getId(), new ArrayList<>());
-//        List<Double> temperatures = sensorDataMap.get(sensor.getId());
-//        temperatures.add(sensor.getTemperature());
-//
-//        // Retain data for the last 5 minutes
-//        temperatures.removeIf(temp ->
-//                sensor.getTimestamp().isBefore(LocalDateTime.now().minusMinutes(5))
-//        );
-//
-//        // Calculate average temperature
-//        double averageTemperature = temperatures.stream()
-//                .mapToDouble(Double::doubleValue)
-//                .average()
-//                .orElse(0.0);
-//
-//        // Generate alert if needed
-//        if (averageTemperature > 40.0) {
-//            generateAlert(sensorData, averageTemperature);
-//        }
-//    }
+
+    public void sendAlerts(String message) throws JsonProcessingException {
+        kafkaTemplate.send("sensor-alerts", message);
+    }
+
 }

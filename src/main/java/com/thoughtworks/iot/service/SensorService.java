@@ -37,7 +37,8 @@ public class SensorService {
 
     public Sensors create(Sensors sensor){
 
-        if(sensor.getTemperature() < -50 || sensor.getTemperature() > 150){
+        if(sensor.getTemperature()==null || sensor.getTemperature() < -50 || sensor.getTemperature() > 150 ||  sensor.getSensorType()==null || sensor.getName()==null
+        || sensor.getLatitude()==null || sensor.getLongitude()==null){
 
             throw new IllegalArgumentException("Sensor Properties are improper");
         }

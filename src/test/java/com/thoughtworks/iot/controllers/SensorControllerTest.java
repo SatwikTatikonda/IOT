@@ -4,6 +4,7 @@ import com.thoughtworks.iot.Exception.SensorNotFoundException;
 import com.thoughtworks.iot.models.SensorType;
 import com.thoughtworks.iot.models.Sensors;
 import com.thoughtworks.iot.service.SensorService;
+import org.apache.kafka.common.protocol.types.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,14 +121,13 @@ class SensorControllerTest {
 
     @Test
     void deleteSensorFromDataBaseWhichIsNotPresent() throws SensorNotFoundException {
+
         Long id = -1L;
         when(sensorService.deleteSensor(id)).thenThrow(new SensorNotFoundException("Sensor not found!"));
 
-        Exception exception = assertThrows(SensorNotFoundException.class, () -> {
-            sensorController.deleteSensor(id);
-        });
+        String message = sensorController.deleteSensor(id);
 
-        assertEquals("Sensor not found!", exception.getMessage());
+        assertEquals("Sensor not found!", message);
         verify(sensorService, times(1)).deleteSensor(id);
     }
 

@@ -26,9 +26,9 @@ public class SensorDataService {
     public SensorData sendSensorData(SensorData sensorData) throws JsonProcessingException {
 
         sensorData.setTimestamp(LocalDateTime.now());
-        kafkaSensorProducer.sendData(sensorData);
         SensorData savedData= sensorDataRepository.save(sensorData);
         logger.info("Persisted sensor data: {}", savedData);
+        kafkaSensorProducer.sendData(sensorData);
         return savedData;
 
 

@@ -25,7 +25,6 @@ public class KafkaSensorProducer {
     public void sendData(SensorData sensorData) throws JsonProcessingException {
 
         logger.info("Sensor data sent to Kafka: {}", sensorData);
-
         kafkaTemplate.send("sensorData", String.valueOf(sensorData.getSensorId()),objectMapper.writeValueAsString(sensorData));
 
     }

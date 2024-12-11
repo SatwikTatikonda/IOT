@@ -24,14 +24,21 @@ public class SensorDataController {
     @Autowired
     private SensorDataService sensorDataService;
 
-    @Autowired
+//    @Autowired
     private ObjectMapper objectMapper;
+
+    SensorDataController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @PostMapping("/kafka")
     public String sendSensorData(@Valid @RequestBody SensorData sensorData){
         try{
             logger.info("Received sensor data: {}", sensorData);
-            return objectMapper.writeValueAsString(sensorDataService.sendSensorData(sensorData));
+            SensorData processedData=sensorDataService.sendSensorData(sensorData);
+            System.out.println(processedData);
+            System.out.println("he --->" + objectMapper.writeValueAsString(processedData));
+            return objectMapper.writeValueAsString(processedData);
 
         } catch (JsonProcessingException ex) {
             logger.error("Error processing sensor data: {}", sensorData, ex);

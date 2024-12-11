@@ -26,13 +26,13 @@ public class kafkaAlertConsumer {
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         try (AdminClient adminClient = AdminClient.create(props)) {
-            // List all topics, including internal topics
+
             ListTopicsOptions options = new ListTopicsOptions();
             options.listInternal(true); // Include internal topics if needed
             System.out.println("getting all topics "+adminClient.listTopics(options).names().get());
 
         } catch (InterruptedException | ExecutionException e) {
-//            throw new RuntimeException("Failed to fetch Kafka topics", e);
+
             System.out.println("got some error whiel retreiving  topics "+e.getMessage());
         }
 

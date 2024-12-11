@@ -22,7 +22,7 @@ public class KafkaSensorConsumer {
     @Autowired
     private SensorDataRepository sensorDataRepository;
     @Autowired
-    private KafkaTemplate kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @KafkaListener(topics = "sensorData",groupId = "sensor-data-consumer-group")
     public void listenToSensorData(String message) throws JsonProcessingException {

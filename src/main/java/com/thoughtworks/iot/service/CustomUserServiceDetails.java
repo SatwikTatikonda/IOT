@@ -26,8 +26,7 @@ public class CustomUserServiceDetails implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Fetch the user from the database
-        System.out.println("Fetching user for username: " + username);
+
         Optional<User> userOptional = userRepository.findByUsername(username);
         User user=userOptional.get();
         List<GrantedAuthority> authorities = user.getRoles().stream()

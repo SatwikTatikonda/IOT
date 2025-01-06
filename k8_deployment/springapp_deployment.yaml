@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-app
+  labels:
+    app: spring-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-app
+  template:
+    metadata:
+      labels:
+        app: spring-app
+    spec:
+      containers:
+        - name: spring-app
+          image: tatikonda764/iot-sensor-iamge:v1.0
+          ports:
+            - containerPort: 9001
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+            - name: MONGO_URI
+              value: "mongodb://mongodb-container:27017/IOT_DB"
+            - name: KAFKA_BROKER
+              value: "kafka:9092"
+
+

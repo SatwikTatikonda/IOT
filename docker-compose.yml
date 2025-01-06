@@ -106,7 +106,7 @@ services:
 
   # Spring Boot Application
   spring-app:
-    image: spring_iot_image
+    image: iot-sensor-image
     container_name: spring_iot_container_app
 
     networks:
@@ -115,7 +115,7 @@ services:
       - mongodb
       - kafka
     ports:
-      - "8082:8082"
+      - "9001:9001"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/IOT_DB
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
